@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stock Predictor App</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Your CSS remains the same */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+    }
+    .container { text-align: center; padding: 40px 20px; }
+    .landing {
+      display: block;
+      background: linear-gradient(to right, #2c3e50, #3498db);
+      color: white;
+      padding: 50px 20px;
+      border-radius: 0 0 30px 30px;
+    }
+    .landing img { width: 200px; margin: 20px auto; }
+    h1 { font-size: 36px; margin-bottom: 20px; }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 40px auto;
+    }
+    input, button {
+      padding: 12px;
+      margin: 10px;
+      font-size: 18px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 70%;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      width: auto;
+    }
+    button:hover { background-color: #45a049; }
+    .prediction { font-size: 22px; font-weight: bold; margin-top: 20px; }
+    #loadingSpinner { display: none; margin-top: 10px; }
+    .spinner {
+      display: inline-block;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    canvas { margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+  <div class="landing">
+    <h1>Welcome to Stock Predictor</h1>
+    <p>Get AI-powered insights with stock price predictions!</p>
+    <img src="https://cdn-icons-png.flaticon.com/512/2910/2910791.png" alt="Stock image" />
+    <button onclick="showApp()">Get Started</button>
+  </div>
+
+  <div id="app" style="display: none;">
+    <div class="container">
+      <div class="card">
+        <h2 id="greeting">Hello there! What's your name?</h2>
+        <input type="text" id="userName" placeholder="Enter your name" />
+        <button onclick="submitName()">Continue</button>
+      </div>
+
+      <div class="card" id="predictSection" style="display: none;">
+        <h2 id="personalizedGreeting"></h2>
+        <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL)" />
+        <button onclick="predictStock()">Predict</button>
+        <div id="loadingSpinner"><div class="spinner"></div></div>
+        <div class="prediction" id="predictionResult">Prediction will appear here.</div>
+        <canvas id="stockChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let userName = "";
+
+    function showApp() {
+      document.querySelector(".landing").style.display = "none";
+      document.getElementById("app").style.display = "block";
+    }
+
+    function submitName() {
+      userName = document.getElementById("userName").value.trim();
+      if (!userName) {
+        alert("Please enter your name.");
+        return;
+      }
+
+      document.getElementById("greeting").style.display = "none";
+      document.getElementById("predictSection").style.display = "block";
+      document.getElementById("personalizedGreeting").innerText = Welcome, ${userName}! Let's predict some stocks.;
+    }
+
+    function predictStock() {
+      const stockSymbol = document.getElementById("stockSymbol").value.trim().toUpperCase();
+      if (!stockSymbol) {
+        alert("Please enter a stock symbol.");
+        return;
+      }
+
+      document.getElementById("predictionResult").innerText = "";
+      document.getElementById("loadingSpinner").style.display = "block";
+
+      setTimeout(() => {
+        const predictedPrice = (Math.random() * 1000).toFixed(2);
+        document.getElementById("predictionResult").innerText = Predicted Price for ${stockSymbol}: $${predictedPrice};
+        document.getElementById("loadingSpinner").style.display = "none";
+
+        renderChart(stockSymbol);
+      }, 2000);
+    }
+
+    function renderChart(symbol) {
+      const ctx = document.getElementById('stockChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+          datasets: [{
+            label: ${symbol} Price Trend,
+            data: Array.from({length: 5}, () => (Math.random() * 1000).toFixed(2)),
+            borderColor: '#4CAF50',
+            backgroundColor: 'rgba(76, 175, 80, 0.2)',
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: false
+            }
+          }
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
